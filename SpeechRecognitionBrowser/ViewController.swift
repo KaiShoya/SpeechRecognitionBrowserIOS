@@ -134,10 +134,17 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     private func recognition(str: String) {
         print(str)
         let range: CGFloat = 2.0
-        if str.contains("上") || str.contains("うえ") {
+        if isInclude(str: str, arr: ["上", "うえ"]) {
             pageUp(range: range)
-        } else if str.contains("下") || str.contains("した") {
+        } else if isInclude(str: str, arr: ["下","した"]) {
             pageDown(range: range)
+        }
+    }
+    
+    // 配列の文字列のどれかが文字列に含まれるかを判定
+    private func isInclude(str: String, arr: [String]) -> Bool {
+        return arr.contains { text in
+            return str.contains(text)
         }
     }
     
