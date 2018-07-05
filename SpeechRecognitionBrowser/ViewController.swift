@@ -133,7 +133,12 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     // 文字列判定
     private func recognition(str: String) {
         print(str)
-        let range: CGFloat = 2.0
+        var range: CGFloat = 2.0
+        
+        if isInclude(str: str, arr: ["もうちょい","餅","もう少し","もうすこし","少し","すこし","ちょっと"]) {
+            range = 5.0
+        }
+        
         if isInclude(str: str, arr: ["上", "うえ"]) {
             pageUp(range: range)
         } else if isInclude(str: str, arr: ["下","した"]) {
