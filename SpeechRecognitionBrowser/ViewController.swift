@@ -12,6 +12,7 @@ import WebKit
 class ViewController: UIViewController, WKUIDelegate {
 
     @IBOutlet weak var webView: WKWebView!
+    @IBOutlet weak var recognitionButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +21,8 @@ class ViewController: UIViewController, WKUIDelegate {
         
         let request = createUrlRequest(urlString: "https://www.google.com/")
         webView.load(request as URLRequest)
+        
+        recognitionButton.isEnabled = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,6 +37,10 @@ class ViewController: UIViewController, WKUIDelegate {
         let url = URL(string: encodedUrlString!)
         let request = URLRequest(url: url!)
         return request
+    }
+    
+    @IBAction func recognitionButtonOnClicked(_ sender: Any) {
+        print("Clicked recognition button!")
     }
 }
 
