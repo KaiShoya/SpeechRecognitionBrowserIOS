@@ -104,7 +104,7 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
             var isFinal = false
             
             if let result = result {
-                print(result.bestTranscription.formattedString)
+                self.recognition(str: result.bestTranscription.formattedString)
                 isFinal = result.isFinal
             }
             
@@ -128,6 +128,28 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
         audioEngine.prepare()
         
         try audioEngine.start()
+    }
+    
+    // 文字列判定
+    private func recognition(str: String) {
+        print(str)
+        let range: CGFloat = 2.0
+        if str.contains("上") || str.contains("うえ") {
+            pageUp(range: range)
+        } else if str.contains("下") || str.contains("した") {
+            pageDown(range: range)
+        }
+    }
+    
+    // webViewの表示を上に移動
+    private func pageUp(range: CGFloat) {
+        webView.scrollView.setContentOffset(CGPoint.init(x: webView.scrollView.contentOffset.x, y: max(webView.scrollView.contentOffset.y - webView.bounds.size.height/range, 0)), animated: true)
+    }
+    
+    // webViewの表示を下に移動
+    private func pageDown(range: CGFloat) {
+        let maxYOffset = webView.scrollView.contentSize.height - self.webView.scrollView.frame.size.height
+        webView.scrollView.setContentOffset(CGPoint.init(x: webView.scrollView.contentOffset.x, y: min(webView.scrollView.contentOffset.y + webView.bounds.size.height/range, maxYOffset)), animated: true)
     }
     
     // recognitionButton押下処理
