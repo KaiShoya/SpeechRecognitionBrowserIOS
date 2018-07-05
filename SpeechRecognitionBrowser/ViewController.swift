@@ -7,19 +7,33 @@
 //
 
 import UIKit
+import WebKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, WKUIDelegate {
 
+    @IBOutlet weak var webView: WKWebView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        webView.uiDelegate = self
+        
+        let request = createUrlRequest(urlString: "https://www.google.com/")
+        webView.load(request as URLRequest)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    // 引数で渡したURLをwebViewにセットできる形に変換する
+    private func createUrlRequest(urlString: String) -> URLRequest {
+        let encodedUrlString = urlString.addingPercentEncoding(withAllowedCharacters:NSCharacterSet.urlQueryAllowed)
+        
+        let url = URL(string: encodedUrlString!)
+        let request = URLRequest(url: url!)
+        return request
+    }
 }
 
