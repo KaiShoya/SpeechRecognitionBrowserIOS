@@ -22,6 +22,15 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     
+    // 音声認識で単語毎にリセットするために使用
+    var timer: Timer?
+    
+    // 音声認識のstart確認用flg
+    var recFlg: Bool = false
+    
+    // 音声が途切れてから判定処理に入るまでの間隔
+    let recognitionInterval = 0.1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -104,8 +113,17 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
             var isFinal = false
             
             if let result = result {
-                self.recognition(str: result.bestTranscription.formattedString)
+//                self.recognition(str: result.bestTranscription.formattedString)
                 isFinal = result.isFinal
+                
+                self.timer?.invalidate()
+                if self.recFlg {
+                    self.timer = Timer.scheduledTimer(withTimeInterval: self.recognitionInterval, repeats: false) {_ in self.recordRestart()}
+                }
+                
+                if isFinal {
+                    self.recognition(str: result.bestTranscription.formattedString)
+                }
             }
             
             if error != nil || isFinal {
@@ -115,8 +133,12 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
                 self.recognitionRequest = nil
                 self.recognitionTask = nil
                 
-                self.recognitionButton.isEnabled = true
-                self.recognitionButton.setTitle("音声認識開始", for: [])
+                if !self.recFlg {
+                    self.recognitionButton.isEnabled = true
+                    self.recognitionButton.setTitle("音声認識開始", for: [])
+                } else {
+                    try! self.startRecording()
+                }
             }
         }
         
@@ -164,6 +186,14 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
         webView.scrollView.setContentOffset(CGPoint.init(x: webView.scrollView.contentOffset.x, y: min(webView.scrollView.contentOffset.y + webView.bounds.size.height/range, maxYOffset)), animated: true)
     }
     
+    //
+    func recordRestart() {
+        if audioEngine.isRunning {
+//            audioEngine.stop()
+            recognitionRequest?.endAudio()
+        }
+    }
+    
     // recognitionButton押下処理
     @IBAction func recognitionButtonOnClicked(_ sender: Any) {
         if audioEngine.isRunning {
@@ -171,17 +201,23 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
             recognitionRequest?.endAudio()
             recognitionButton.isEnabled = false
             recognitionButton.setTitle("音声認識終了中...", for: .disabled)
+            recFlg = false
         } else {
             try! startRecording()
             recognitionButton.setTitle("音声認識終了", for: [])
+            recFlg = true
         }
     }
     
     // MARK: SFSpeechRecognizerDelegate
     public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
         if available {
-            recognitionButton.isEnabled = true
-            recognitionButton.setTitle("音声認識開始", for: [])
+            if recFlg {
+                try! startRecording()
+            } else {
+                recognitionButton.isEnabled = true
+                recognitionButton.setTitle("音声認識開始", for: [])
+            }
         } else {
             recognitionButton.isEnabled = false
             recognitionButton.setTitle("音声認識を有効にしてください", for: .disabled)
