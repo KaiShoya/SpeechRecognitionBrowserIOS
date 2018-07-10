@@ -12,7 +12,24 @@
 		8AB66E5020ECB0CA009DA51F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AB66E4E20ECB0CA009DA51F /* Main.storyboard */; };
 		8AB66E5220ECB0D2009DA51F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8AB66E5120ECB0D2009DA51F /* Assets.xcassets */; };
 		8AB66E5520ECB0D2009DA51F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AB66E5320ECB0D2009DA51F /* LaunchScreen.storyboard */; };
+		8AB66E6020F0B088009DA51F /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AB66E5F20F0B088009DA51F /* HTMLParser.swift */; };
+		8AB66E6220F0B2C3009DA51F /* Kanna.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8AB66E6120F0B2C3009DA51F /* Kanna.framework */; };
+		8AB66E6320F0B2C3009DA51F /* Kanna.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8AB66E6120F0B2C3009DA51F /* Kanna.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8AB66E6420F0B2C3009DA51F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8AB66E6320F0B2C3009DA51F /* Kanna.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8AB66E4720ECB0C9009DA51F /* SpeechRecognitionBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeechRecognitionBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -22,6 +39,8 @@
 		8AB66E5120ECB0D2009DA51F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8AB66E5420ECB0D2009DA51F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8AB66E5620ECB0D2009DA51F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8AB66E5F20F0B088009DA51F /* HTMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLParser.swift; sourceTree = "<group>"; };
+		8AB66E6120F0B2C3009DA51F /* Kanna.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Kanna.framework; path = Carthage/Build/iOS/Kanna.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AB66E6220F0B2C3009DA51F /* Kanna.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +58,7 @@
 		8AB66E3E20ECB0C9009DA51F = {
 			isa = PBXGroup;
 			children = (
+				8AB66E6120F0B2C3009DA51F /* Kanna.framework */,
 				8AB66E4920ECB0C9009DA51F /* SpeechRecognitionBrowser */,
 				8AB66E4820ECB0C9009DA51F /* Products */,
 			);
@@ -60,6 +81,7 @@
 				8AB66E5120ECB0D2009DA51F /* Assets.xcassets */,
 				8AB66E5320ECB0D2009DA51F /* LaunchScreen.storyboard */,
 				8AB66E5620ECB0D2009DA51F /* Info.plist */,
+				8AB66E5F20F0B088009DA51F /* HTMLParser.swift */,
 			);
 			path = SpeechRecognitionBrowser;
 			sourceTree = "<group>";
@@ -74,6 +96,7 @@
 				8AB66E4320ECB0C9009DA51F /* Sources */,
 				8AB66E4420ECB0C9009DA51F /* Frameworks */,
 				8AB66E4520ECB0C9009DA51F /* Resources */,
+				8AB66E6420F0B2C3009DA51F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -135,6 +158,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8AB66E6020F0B088009DA51F /* HTMLParser.swift in Sources */,
 				8AB66E4D20ECB0CA009DA51F /* ViewController.swift in Sources */,
 				8AB66E4B20ECB0CA009DA51F /* AppDelegate.swift in Sources */,
 			);
@@ -282,6 +306,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP89D3468C;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = SpeechRecognitionBrowser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -300,6 +329,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP89D3468C;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2";
 				INFOPLIST_FILE = SpeechRecognitionBrowser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
