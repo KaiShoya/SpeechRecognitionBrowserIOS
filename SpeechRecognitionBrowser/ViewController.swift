@@ -12,15 +12,21 @@ import UIKit
 import WebKit
 import Speech
 
-class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSpeechRecognizerDelegate {
+class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSpeechRecognizerDelegate, AVSpeechSynthesizerDelegate {
 
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var recognitionButton: UIButton!
     
+    // 音声認識関連
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ja-JP"))!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
+    
+    // 音声合成関連
+    private let speechSynthesizer = AVSpeechSynthesizer()
+    private var attributedString: NSMutableAttributedString!
+    private var utterance: AVSpeechUtterance!
     
     // 音声認識で単語毎にリセットするために使用
     var timer: Timer?
@@ -44,6 +50,8 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
         webView.load(request as URLRequest)
         
         recognitionButton.isEnabled = false
+        
+        speechSynthesizer.delegate = self
     }
     
     override public func viewDidAppear(_ animated: Bool) {
@@ -110,8 +118,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
         }
         
         let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(AVAudioSessionCategoryRecord)
-        try audioSession.setMode(AVAudioSessionModeMeasurement)
+        try! audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord, with: .defaultToSpeaker)
         try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
         
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
@@ -128,7 +135,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
             var isFinal = false
             
             if let result = result {
-//                self.recognition(str: result.bestTranscription.formattedString)
                 isFinal = result.isFinal
                 
                 self.timer?.invalidate()
@@ -137,6 +143,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
                 }
                 
                 if isFinal {
+                    self.audioEngine.stop()
                     self.recognition(str: result.bestTranscription.formattedString)
                 }
             }
@@ -221,9 +228,25 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
         }
     }
     
-    // 文字列を喋らせる TODO: 未実装
+    // 文字列を喋らせる
     private func speakText(str: String) {
-        print(str)
+        speechSynthesizer.speak(setSpeechText(text: str))
+    }
+    
+    /// 文字列から音声を合成するための設定
+    /// - Parameters:
+    ///   - text: 再生したい文字列
+    /// - Returns: AVSpeechUtterance
+    private func setSpeechText(text: String) -> AVSpeechUtterance {
+        let utterance = AVSpeechUtterance(string: text)
+        // 言語を設定
+        utterance.voice = AVSpeechSynthesisVoice(language: "ja-JP")
+        // 再生速度を設定
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        // 声の高さを設定
+        utterance.pitchMultiplier = 1.0
+        
+        return utterance
     }
     
     //
