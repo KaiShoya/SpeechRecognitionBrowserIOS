@@ -12,7 +12,7 @@ import UIKit
 import WebKit
 import Speech
 
-class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate {
+class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSpeechRecognizerDelegate {
 
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var recognitionButton: UIButton!
@@ -31,10 +31,14 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     // 音声が途切れてから判定処理に入るまでの間隔
     let recognitionInterval = 0.1
     
+    // 材料一覧を格納する
+    var materials: [[String]] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         webView.uiDelegate = self
+        webView.navigationDelegate = self
         
         let request = createUrlRequest(urlString: "https://www.google.com/")
         webView.load(request as URLRequest)
@@ -75,6 +79,17 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // 画面遷移開始時
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        // 表示するページがパース対象だったら材料を配列で取得
+        guard let urlString = webView.url?.absoluteString else {return}
+        if HTMLParser.canBeParsed(urlString: urlString) != HTMLParser.INDEX_NONE {
+            materials = HTMLParser.parseMaterial(urlString: urlString)
+        } else {
+            materials = []
+        }
     }
     
     // 引数で渡したURLをwebViewにセットできる形に変換する
@@ -165,6 +180,8 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
             pageUp(range: range)
         } else if isInclude(str: str, arr: ["下","した"]) {
             pageDown(range: range)
+        } else if isInclude(str: str, arr: ["グラム", "ぐらむ", "どれくらい", "個", "分量", "量は"]) {
+            howMuchMaterial(str: str)
         }
     }
     
@@ -184,6 +201,29 @@ class ViewController: UIViewController, WKUIDelegate, SFSpeechRecognizerDelegate
     private func pageDown(range: CGFloat) {
         let maxYOffset = webView.scrollView.contentSize.height - self.webView.scrollView.frame.size.height
         webView.scrollView.setContentOffset(CGPoint.init(x: webView.scrollView.contentOffset.x, y: min(webView.scrollView.contentOffset.y + webView.bounds.size.height/range, maxYOffset)), animated: true)
+    }
+    
+    // 文字列から材料を探し、分量を返す
+    // TODO: 「しょうゆ」と「醤油」が別物判定されてしまう
+    // TODO: 「絹豆腐」の分量を聞く際に「豆腐の分量」と聞いても判定できない
+    private func howMuchMaterial(str: String) {
+        
+        var text = ""
+        for m in materials {
+            if isInclude(str: str, arr: [m[0]]) {
+                text += m[0] + "は" + m[1] + "です。"
+            }
+        }
+        if text == "" {
+            speakText(str: "すみません、よくわかりませんでした。")
+        } else {
+            speakText(str: text)
+        }
+    }
+    
+    // 文字列を喋らせる TODO: 未実装
+    private func speakText(str: String) {
+        print(str)
     }
     
     //
