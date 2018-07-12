@@ -211,8 +211,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, SFSp
     }
     
     // 文字列から材料を探し、分量を返す
-    // TODO: 「しょうゆ」と「醤油」が別物判定されてしまう
-    // TODO: 「絹豆腐」の分量を聞く際に「豆腐の分量」と聞いても判定できない
     private func howMuchMaterial(str: String) {
         
         var text = ""
